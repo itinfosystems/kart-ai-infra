@@ -41,7 +41,7 @@ resource "aws_cognito_user_pool" "main" {
 
 # Cognito User Pool Client
 resource "aws_cognito_user_pool_client" "api_client" {
-  name         = "my-api-client"
+  name         = "kart-ai-api-client"
   user_pool_id = aws_cognito_user_pool.main.id
   generate_secret = false
 
@@ -49,7 +49,9 @@ resource "aws_cognito_user_pool_client" "api_client" {
   allowed_oauth_scopes                = ["email", "openid", "profile"]
   callback_urls                       = ["https://example.com/callback"]
   logout_urls                         = ["https://example.com/logout"]
-  supported_identity_providers        = ["COGNITO", "Google", "Facebook"]
+  supported_identity_providers        = [
+    "COGNITO", 
+    "Google"]
   allowed_oauth_flows_user_pool_client = true
 }
 
