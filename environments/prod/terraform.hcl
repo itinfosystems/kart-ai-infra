@@ -1,0 +1,5 @@
+bucket          = "prod-kart-ai-tfstate"
+key             = "terraform.tfstate"
+region          = "eu-west-2"
+dynamodb_table  = "prod-kart-ai-tfstate"
+profile         = "itinfosystems"
