@@ -41,13 +41,18 @@ resource "aws_cognito_user_pool" "main" {
 
 # Cognito User Pool Client
 resource "aws_cognito_user_pool_client" "api_client" {
-  name         = "kart-ai-api-client"
-  user_pool_id = aws_cognito_user_pool.main.id
+  name            = "kart-ai-api-client"
+  user_pool_id    = aws_cognito_user_pool.main.id
   generate_secret = false
 
   allowed_oauth_flows                 = ["code", "implicit"]
-  allowed_oauth_scopes                = ["email", "openid", "profile"]
-  callback_urls                       = ["https://example.com/callback"]
+  allowed_oauth_scopes                = [
+                                          "email", 
+                                          "openid", 
+                                          "profile", 
+                                          "${aws_cognito_resource_server.resource.identifier}/read", 
+                                          "${aws_cognito_resource_server.resource.identifier}/write"]
+  callback_urls                       = ["http://localhost:8000/docs/oauth2-redirect"]
   logout_urls                         = ["https://example.com/logout"]
   supported_identity_providers        = [
     "COGNITO", 
@@ -55,6 +60,23 @@ resource "aws_cognito_user_pool_client" "api_client" {
   allowed_oauth_flows_user_pool_client = true
 }
 
+# Create a resource server for custom scopes
+resource "aws_cognito_resource_server" "resource" {
+  identifier = "kart-ai"
+  name       = "KartAI API"
+  
+  scope {
+    scope_name        = "read"
+    scope_description = "Read access to KartAI API"
+  }
+  
+  scope {
+    scope_name        = "write"
+    scope_description = "Write access to KartAI API"
+  }
+  
+  user_pool_id = aws_cognito_user_pool.main.id
+}
 
 # 3. Cognito Identity Provider - Google
 resource "aws_cognito_identity_provider" "google" {
@@ -72,6 +94,29 @@ resource "aws_cognito_identity_provider" "google" {
     email = "email"
     name  = "name"
   }
+}
+
+# Cognito User Pool Domain
+resource "aws_cognito_user_pool_domain" "main" {
+  domain       = "kart-ai-${var.environment}"
+  user_pool_id = aws_cognito_user_pool.main.id
+}
+
+# Create a test user if enabled
+resource "aws_cognito_user" "test_user" {
+  count = var.create_test_user ? 1 : 0
+
+  user_pool_id = aws_cognito_user_pool.main.id
+  username     = "baker"
+  
+  password = "Letmein!1"
+  
+  attributes = {
+    email          = "test@example.com"
+    email_verified = true
+  }
+  
+  message_action = "SUPPRESS" # Suppress welcome email
 }
 
 # # 4. Cognito Identity Provider - Facebook

@@ -24,3 +24,9 @@ variable "force_destroy" {
   type        = bool
   default     = false
 }
+
+variable "create_test_user" {
+  description = "Whether to create a test user in Cognito (for local testing only)"
+  type        = bool
+  default     = false
+}
