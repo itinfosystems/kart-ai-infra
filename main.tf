@@ -94,6 +94,13 @@ resource "aws_cognito_identity_provider" "google" {
     email = "email"
     name  = "name"
   }
+
+  lifecycle {
+    ignore_changes = [
+      provider_details,
+      attribute_mapping
+    ]
+  }
 }
 
 # Cognito User Pool Domain
