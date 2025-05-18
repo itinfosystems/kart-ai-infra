@@ -13,5 +13,5 @@ Foundation for shared Kart AI
     -   `aws sso login --profile itinfosystems`
 
 -   `terraform init -backend-config=./environments/prod/terraform.hcl -reconfigure`
--   `terraform plan -var-file=./environments/prod/terraform.tfvars -state=./environments/prod/terraform.tfstate`
+-   `terraform plan -var-file=./environments/prod/terraform.tfvars`
 
